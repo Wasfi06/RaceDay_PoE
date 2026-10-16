@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RaceDayMVC.Models;
 using System.Diagnostics;
-//ssd
+//ssda
 namespace RaceDayMVC.Controllers
 {
     public class HomeController : Controller
