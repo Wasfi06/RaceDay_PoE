@@ -1,0 +1,55 @@
+﻿@model RaceDayMVC.Models.EventViewModel
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<div class="container py-5">
+    <a asp-controller="Organizer"
+       asp-action="Events"
+       class="btn btn-outline-secondary mb-4">
+        &larr; Back to My Events
+    </a>
+
+    <h1 class="fw-bold mb-4">@Model.Name</h1>
+
+    @if (!string.IsNullOrWhiteSpace(Model.BannerImageUrl))
+    {
+        <img src="@Model.BannerImageUrl"
+             alt="@Model.Name"
+             class="img-fluid rounded mb-4"
+             style="max-height: 350px; width: 100%; object-fit: cover;" />
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-3">Event Information</h4>
+
+            <p><strong>Description:</strong> @Model.Description</p>
+            <p><strong>Location:</strong> @Model.Location</p>
+            <p>
+                <strong>Date and time:</strong>
+                @Model.EventDate.ToString("dd MMM yyyy, HH:mm")
+            </p>
+            <p><strong>Distance:</strong> @Model.DistanceKm km</p>
+            <p><strong>Event type:</strong> @Model.EventType</p>
+
+            @if (!string.IsNullOrWhiteSpace(Model.RouteDescription))
+            {
+                <p><strong>Route details:</strong> @Model.RouteDescription</p>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.RouteUrl))
+            {
+                <p>
+                    <strong>Route link:</strong>
+                    <a href="@Model.RouteUrl"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        View route
+                    </a>
+                </p>
+            }
+        </div>
+    </div>
+</div>

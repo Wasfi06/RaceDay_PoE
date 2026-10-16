@@ -1,0 +1,159 @@
+﻿@model RaceDayMVC.Models.OrganizerEventResultsViewModel
+
+@{
+    ViewData["Title"] = "Event Results";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold">Event Results</h1>
+            <p class="text-muted mb-0">@Model.EventName</p>
+        </div>
+
+        <a asp-controller="Organizer"
+           asp-action="Events"
+           class="btn btn-outline-secondary">
+            Back to My Events
+        </a>
+    </div>
+
+    @if (TempData["ResultSuccess"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["ResultSuccess"]
+        </div>
+    }
+
+    @if (TempData["ResultError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ResultError"]
+        </div>
+    }
+
+    @if (Model.Participants.Count == 0)
+    {
+        <div class="alert alert-info">
+            No participants have enrolled in this event yet.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Participant</th>
+                        <th>Category</th>
+                        <th>Finish time</th>
+                        <th>Position</th>
+                        <th>Status</th>
+                        <th>Record result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var participant in Model.Participants)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@participant.ParticipantName</strong>
+                                <br />
+                                <small class="text-muted">
+                                    @participant.ParticipantEmail
+                                </small>
+                            </td>
+                            <td>@participant.CategoryName</td>
+                            <td>
+                                @(participant.FinishTime?.ToString(@"hh\:mm\:ss") ?? "—")
+                            </td>
+                            <td>@(participant.FinishPosition?.ToString() ?? "—")</td>
+                            <td>
+                                @if (participant.ResultId.HasValue)
+                                {
+                                    if (participant.IsPublished)
+                                    {
+                                        <span class="badge bg-success">Published</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            Not published
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Not recorded</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!participant.ResultId.HasValue)
+                                {
+                                    <form asp-controller="Organizer"
+                                          asp-action="RecordResult"
+                                          method="post">
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="eventId"
+                                               value="@Model.EventId" />
+
+                                        <input type="hidden"
+                                               name="enrollmentId"
+                                               value="@participant.EnrollmentId" />
+
+                                        <div class="mb-2">
+                                            <label class="form-label">
+                                                Time (HH:MM:SS)
+                                            </label>
+                                            <input type="text"
+                                                   name="finishTime"
+                                                   class="form-control"
+                                                   placeholder="00:52:30" />
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label class="form-label">
+                                                Position
+                                            </label>
+                                            <input type="number"
+                                                   name="finishPosition"
+                                                   min="1"
+                                                   class="form-control"
+                                                   placeholder="1" />
+                                        </div>
+
+                                        <div class="form-check mb-2">
+                                            <input type="checkbox"
+                                                   name="isPublished"
+                                                   value="true"
+                                                   class="form-check-input"
+                                                   id="publish-@participant.EnrollmentId" />
+
+                                            <label class="form-check-label"
+                                                   for="publish-@participant.EnrollmentId">
+                                                Publish now
+                                            </label>
+                                        </div>
+
+                                        <button type="submit"
+                                                class="btn btn-primary btn-sm">
+                                            Save Result
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        Result already recorded
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

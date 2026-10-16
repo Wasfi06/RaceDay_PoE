@@ -1,0 +1,164 @@
+﻿@model List<RaceDayMVC.Models.MyEnrollmentViewModel>
+
+@{
+    ViewData["Title"] = "My Enrollments";
+}
+
+<div class="container py-5">
+
+    <!-- Page Heading -->
+
+    <div class="mb-4">
+        <h1 class="display-5 fw-bold">
+            My Enrollments
+        </h1>
+
+        <p class="text-muted">
+            View the events you've entered, your selected categories
+            and your enrollment status.
+        </p>
+    </div>
+
+    <!-- Navigation -->
+
+    <a asp-controller="Participant"
+       asp-action="Index"
+       class="btn btn-outline-secondary mb-4">
+        &larr; Browse Events
+    </a>
+
+    <!-- Empty State -->
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+
+                <h2 class="h4 fw-bold">
+                    No Enrollments Yet
+                </h2>
+
+                <p class="text-muted">
+                    You haven't enrolled in any events yet.
+                    Browse upcoming events to find your next challenge.
+                </p>
+
+                <a asp-controller="Participant"
+                   asp-action="Index"
+                   class="btn btn-primary mt-2">
+                    Browse Events
+                </a>
+
+                <a asp-controller="Participant"
+                   asp-action="MyResults"
+                   class="btn btn-success mb-4">
+                    My Results
+                </a>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Enrollment Summary -->
+
+        <div class="mb-4">
+            <p class="text-muted">
+                You have entered
+                <strong>@Model.Count</strong>
+                @(Model.Count == 1 ? "event" : "events").
+            </p>
+        </div>
+
+        <!-- Enrollment Cards -->
+
+        <div class="row g-4">
+
+            @foreach (var enrollment in Model)
+            {
+                var status = enrollment.Status?.Trim() ?? "";
+
+                var statusClass = status.Equals(
+                    "Registered",
+                    StringComparison.OrdinalIgnoreCase)
+                    ? "bg-success"
+                    : status.Equals(
+                        "Completed",
+                        StringComparison.OrdinalIgnoreCase)
+                        ? "bg-primary"
+                        : status.Equals(
+                            "Cancelled",
+                            StringComparison.OrdinalIgnoreCase)
+                            ? "bg-danger"
+                            : "bg-secondary";
+
+                <div class="col-12 col-md-6 col-lg-4">
+
+                    <div class="card h-100 border-0 shadow-sm">
+
+                        <div class="card-body d-flex flex-column">
+
+                            <!-- Status -->
+
+                            <div class="mb-3">
+                                <span class="badge @statusClass">
+                                    @(string.IsNullOrWhiteSpace(status)
+                                        ? "Status unavailable"
+                                        : status)
+                                </span>
+                            </div>
+
+                            <!-- Event Name -->
+
+                            <h2 class="h5 fw-bold mb-3">
+                                @enrollment.EventName
+                            </h2>
+
+                            <!-- Category -->
+
+                            <p class="mb-2">
+                                <strong>Category:</strong>
+
+                                @(string.IsNullOrWhiteSpace(enrollment.CategoryName)
+                                    ? "Not available"
+                                    : enrollment.CategoryName)
+                            </p>
+
+                            <!-- Enrollment ID -->
+
+                            <p class="mb-2 text-muted">
+                                <strong>Enrollment ID:</strong>
+                                @enrollment.EnrollmentId
+                            </p>
+
+                            <!-- Enrollment Date -->
+
+                            <p class="mb-4 text-muted">
+                                <strong>Enrolled on:</strong>
+                                @enrollment.EnrollmentDate.ToString("dd MMM yyyy")
+                            </p>
+
+                            <!-- Actions -->
+
+                            <div class="mt-auto">
+
+                                <a asp-controller="Participant"
+                                   asp-action="Details"
+                                   asp-route-id="@enrollment.EventId"
+                                   class="btn btn-outline-primary w-100">
+                                    View Event Details
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

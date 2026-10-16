@@ -1,0 +1,90 @@
+﻿```cshtml
+@model List<RaceDayMVC.Models.CategoryViewModel>
+
+@{
+    ViewData["Title"] = "Event Categories";
+    int eventId = ViewBag.EventId ?? 0;
+}
+
+<h2>Event Categories</h2>
+
+<p>Manage the age groups or distance categories for this event.</p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<p>
+    <a asp-controller="Organizer"
+       asp-action="CreateCategory"
+       asp-route-eventId="@eventId"
+       class="btn btn-primary">
+        Add Category
+    </a>
+
+    <a asp-controller="Organizer"
+       asp-action="Events"
+       class="btn btn-secondary">
+        Back to Events
+    </a>
+</p>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">
+        No categories have been added to this event yet.
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Age Range</th>
+                <th>Distance Range (km)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Model)
+            {
+                <tr>
+                    <td>@category.Name</td>
+                    <td>@category.CategoryType</td>
+                    <td>
+                        @if (category.CategoryType == "Age")
+                        {
+                            @($"{category.MinAge}–{category.MaxAge} years")
+                        }
+                        else
+                        {
+                            <text>—</text>
+                        }
+                    </td>
+                    <td>
+                        @if (category.CategoryType == "Distance")
+                        {
+                            @($"{category.MinDistanceKm}–{category.MaxDistanceKm} km")
+                        }
+                        else
+                        {
+                            <text>—</text>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+```

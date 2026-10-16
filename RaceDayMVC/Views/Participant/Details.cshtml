@@ -1,0 +1,220 @@
+﻿@model RaceDayMVC.Models.EventDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Event.Name;
+}
+
+<div class="container py-5">
+
+    <a asp-controller="Participant"
+       asp-action="Index"
+       class="btn btn-outline-secondary mb-4">
+        &larr; Back to Events
+    </a>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4 p-md-5">
+
+            <!-- Event Information -->
+
+            <span class="badge bg-primary mb-3">
+                @Model.Event.EventType
+            </span>
+
+            <h1 class="display-5 fw-bold">
+                @Model.Event.Name
+            </h1>
+
+            <p class="lead text-muted">
+                @Model.Event.Description
+            </p>
+
+            <hr />
+
+            <p>
+                <strong>Date:</strong>
+                @Model.Event.EventDate.ToString("dd MMMM yyyy")
+            </p>
+
+            <p>
+                <strong>Location:</strong>
+                @Model.Event.Location
+            </p>
+
+            <p>
+                <strong>Distance:</strong>
+                @Model.Event.DistanceKm km
+            </p>
+
+            <p>
+                <strong>Organizer:</strong>
+                @Model.Event.OrganizerName
+            </p>
+
+            <!-- Route Information -->
+
+            @if (!string.IsNullOrWhiteSpace(Model.Event.RouteDescription))
+            {
+                <h5 class="mt-4">About the Route</h5>
+
+                <p>
+                    @Model.Event.RouteDescription
+                </p>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.Event.RouteUrl))
+            {
+                <a href="@Model.Event.RouteUrl"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="btn btn-outline-primary mb-4">
+                    View Route
+                </a>
+            }
+
+            <hr />
+
+            <!-- Event Enrollment -->
+
+            <h2 class="h4 mb-3">
+                Enter This Event
+            </h2>
+
+            <!-- Enrollment Success Message -->
+
+            @if (TempData["EnrollmentSuccess"] != null)
+            {
+                <div class="alert alert-success" role="alert">
+
+                    @TempData["EnrollmentSuccess"]
+
+                    @if (TempData["EnrollmentId"] != null)
+                    {
+                        <p class="mb-0 mt-2">
+                            Enrollment ID:
+                            @TempData["EnrollmentId"]
+                        </p>
+                    }
+
+                    <a asp-controller="Participant"
+                       asp-action="MyEnrollments"
+                       class="alert-link">
+                        View My Enrollments
+                    </a>
+
+                </div>
+            }
+
+            <!-- Enrollment Error Message -->
+
+            @if (TempData["EnrollmentError"] != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @TempData["EnrollmentError"]
+                </div>
+            }
+
+            <!-- Category Availability -->
+
+            @if (Model.Categories == null || Model.Categories.Count == 0)
+            {
+                <div class="alert alert-warning" role="alert">
+                    No categories are currently available for this event.
+                    Please check again later.
+                </div>
+            }
+            else
+            {
+                <!-- Enrollment Form -->
+
+                <form asp-controller="Participant"
+                      asp-action="Enroll"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="EventId"
+                           value="@Model.Event.EventId" />
+
+                    <!-- Category Selection -->
+
+                    <div class="mb-3">
+
+                        <label for="CategoryId"
+                               class="form-label">
+                            Select your age category
+                        </label>
+
+                        <select id="CategoryId"
+                                name="CategoryId"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                -- Choose a category --
+                            </option>
+
+                            @foreach (var category in Model.Categories)
+                            {
+                                <option value="@category.CategoryId">
+
+                                    @category.Name
+                                    (@category.CategoryType)
+
+                                    @if (category.MinAge.HasValue || category.MaxAge.HasValue)
+                                    {
+                                        <text> — Ages </text>
+
+                                        @if (category.MinAge.HasValue)
+                                        {
+                                            @category.MinAge
+                                        }
+                                        else
+                                        {
+                                            <text>Any</text>
+                                        }
+
+                                        <text>–</text>
+
+                                        @if (category.MaxAge.HasValue)
+                                        {
+                                            @category.MaxAge
+                                        }
+                                        else
+                                        {
+                                            <text>Open</text>
+                                        }
+                                    }
+
+                                </option>
+                            }
+
+                        </select>
+
+                        <div class="form-text">
+                            Choose the category that applies to you
+                            before entering the event.
+                        </div>
+
+                    </div>
+
+                    <!-- Submit Enrollment -->
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Enter Event
+                    </button>
+
+                    <a asp-controller="Participant"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary ms-2">
+                        Cancel
+                    </a>
+
+                </form>
+            }
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,226 @@
+﻿
+@model RaceDayMVC.Models.ProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container py-5">
+
+    <div class="mb-4">
+        <h1 class="display-5 fw-bold">My Profile</h1>
+        <p class="text-muted">
+            View and update your personal information and profile picture.
+        </p>
+    </div>
+
+    <a asp-controller="Participant"
+       asp-action="Index"
+       class="btn btn-outline-secondary mb-4">
+        &larr; Back to Events
+    </a>
+
+    @if (TempData["ProfileSuccess"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["ProfileSuccess"]
+        </div>
+    }
+
+    @if (TempData["ProfileError"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ProfileError"]
+        </div>
+    }
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+
+            <!-- Profile Picture -->
+            <div class="mb-4 text-center">
+
+                @if (!string.IsNullOrWhiteSpace(Model.ProfilePictureUrl))
+                {
+                    <img src="@Model.ProfilePictureUrl"
+                         alt="Profile picture"
+                         class="rounded-circle border shadow-sm"
+                         style="width: 140px; height: 140px; object-fit: cover;" />
+                }
+                else
+                {
+                    <div class="rounded-circle bg-light border d-inline-flex
+                                align-items-center justify-content-center"
+                         style="width: 140px; height: 140px;">
+                        <span class="text-muted fs-1">
+                            <i class="bi bi-person-circle"></i>
+                        </span>
+                    </div>
+                }
+
+                <h2 class="h5 fw-bold mt-3">Profile Picture</h2>
+
+                <p class="text-muted small">
+                    Choose a picture to personalise your RaceDay profile.
+                </p>
+
+                <!-- Picture Upload Form -->
+                <form asp-controller="Participant"
+                      asp-action="UploadProfilePicture"
+                      method="post"
+                      enctype="multipart/form-data">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="text-start">
+                        <label for="profilePicture" class="form-label">
+                            Select an image
+                        </label>
+
+                        <input type="file"
+                               id="profilePicture"
+                               name="ProfilePicture"
+                               class="form-control"
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                               required />
+
+                        <div class="form-text">
+                            Accepted formats: JPG, PNG and WebP.
+                            Maximum size: 5 MB.
+                        </div>
+                    </div>
+
+                    <div id="imagePreviewContainer"
+                         class="mt-3 d-none">
+
+                        <p class="small text-muted mb-2">
+                            Selected image preview
+                        </p>
+
+                        <img id="imagePreview"
+                             alt="Selected profile picture preview"
+                             class="rounded-circle border shadow-sm"
+                             style="width: 120px; height: 120px; object-fit: cover;" />
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-primary mt-3">
+                        Upload Picture
+                    </button>
+
+                </form>
+            </div>
+
+            <hr class="my-4" />
+
+            <!-- Profile Details Form -->
+            <h2 class="h4 mb-3">Personal Information</h2>
+
+            <form asp-controller="Participant"
+                  asp-action="Profile"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="FirstName" class="form-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LastName" class="form-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email"
+                           class="form-control"
+                           type="email" />
+                    <span asp-validation-for="Email"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input asp-for="Phone"
+                           class="form-control"
+                           type="tel" />
+                    <span asp-validation-for="Phone"
+                          class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Save Changes
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const pictureInput = document.getElementById("profilePicture");
+        const preview = document.getElementById("imagePreview");
+        const previewContainer =
+            document.getElementById("imagePreviewContainer");
+
+        let previewUrl = null;
+
+        pictureInput.addEventListener("change", function () {
+            const file = this.files && this.files[0];
+
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+                previewUrl = null;
+            }
+
+            previewContainer.classList.add("d-none");
+            preview.removeAttribute("src");
+
+            if (!file) {
+                return;
+            }
+
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            ];
+
+            if (!allowedTypes.includes(file.type)) {
+                alert("Please select a JPG, PNG or WebP image.");
+                this.value = "";
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert("The image must not exceed 5 MB.");
+                this.value = "";
+                return;
+            }
+
+            previewUrl = URL.createObjectURL(file);
+            preview.src = previewUrl;
+            previewContainer.classList.remove("d-none");
+        });
+    </script>
+}

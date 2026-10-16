@@ -1,0 +1,68 @@
+﻿@model List<RaceDayMVC.Models.OrganizerEnrollmentViewModel>
+
+@{
+    ViewData["Title"] = "Event Enrollments";
+}
+
+<div class="container mt-4">
+    <h2>Event Enrollments</h2>
+
+    <p class="text-muted">
+        Enrollments for Event #@ViewBag.EventId
+    </p>
+
+    <a asp-controller="Organizer"
+       asp-action="Events"
+       class="btn btn-secondary mb-3">
+        Back to My Events
+    </a>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info mt-3">
+            <h5>No enrollments yet</h5>
+            <p class="mb-0">
+                No participants have enrolled in this event yet.
+                Check back later.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Participant</th>
+                        <th>Email</th>
+                        <th>Category</th>
+                        <th>Enrollment Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var enrollment in Model)
+                    {
+                        <tr>
+                            <td>@enrollment.ParticipantName</td>
+                            <td>@enrollment.ParticipantEmail</td>
+                            <td>@enrollment.CategoryName</td>
+                            <td>
+                                @enrollment.EnrollmentDate.ToString("dd MMM yyyy HH:mm")
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">
+                                    @enrollment.Status
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <p class="text-muted">
+            Total enrollments: @Model.Count
+        </p>
+    }
+</div>

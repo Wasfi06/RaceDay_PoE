@@ -1,0 +1,61 @@
+﻿@model List<RaceDayMVC.Models.ResultViewModel>
+
+@{
+    ViewData["Title"] = "My Results";
+}
+
+<div class="container py-5">
+    <h1 class="fw-bold">My Results</h1>
+
+    <p class="text-muted mb-4">
+        View the results published for your race entries.
+    </p>
+
+    <a asp-controller="Participant"
+       asp-action="Index"
+       class="btn btn-outline-secondary mb-4">
+        Browse Events
+    </a>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="alert alert-info">
+            You don't have any published results yet.
+            Check back after your event organizer publishes them.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Event</th>
+                        <th>Category</th>
+                        <th>Finish time</th>
+                        <th>Position</th>
+                        <th>Published</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var result in Model)
+                    {
+                        <tr>
+                            <td>@result.EventName</td>
+                            <td>@result.CategoryName</td>
+                            <td>
+                                @(result.FinishTime?.ToString(@"hh\:mm\:ss") ?? "—")
+                            </td>
+                            <td>
+                                @(result.FinishPosition?.ToString() ?? "—")
+                            </td>
+                            <td>
+                                @(result.PublishedAt?.ToString("dd MMM yyyy") ?? "—")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

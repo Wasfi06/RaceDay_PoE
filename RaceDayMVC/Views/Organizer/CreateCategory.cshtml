@@ -1,0 +1,104 @@
+﻿```cshtml
+@model RaceDayMVC.Models.CreateCategoryViewModel
+
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<h2>Create Event Category</h2>
+
+<p>Add an age group or distance category for your event.</p>
+
+<form asp-controller="Organizer"
+      asp-action="CreateCategory"
+      method="post">
+
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="EventId" />
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Category Name</label>
+        <input asp-for="Name"
+               class="form-control"
+               placeholder="e.g. Under 18 or 10 km"
+               required />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CategoryType" class="form-label">Category Type</label>
+        <select asp-for="CategoryType" class="form-select" id="categoryType">
+            <option value="Age">Age Group</option>
+            <option value="Distance">Distance</option>
+        </select>
+        <span asp-validation-for="CategoryType" class="text-danger"></span>
+    </div>
+
+    <div id="ageFields">
+        <div class="mb-3">
+            <label asp-for="MinAge" class="form-label">Minimum Age</label>
+            <input asp-for="MinAge" type="number" min="0" max="120"
+                   class="form-control" />
+            <span asp-validation-for="MinAge" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="MaxAge" class="form-label">Maximum Age</label>
+            <input asp-for="MaxAge" type="number" min="0" max="120"
+                   class="form-control" />
+            <span asp-validation-for="MaxAge" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div id="distanceFields" style="display:none;">
+        <div class="mb-3">
+            <label asp-for="MinDistanceKm" class="form-label">
+                Minimum Distance (km)
+            </label>
+            <input asp-for="MinDistanceKm" type="number" min="0"
+                   max="1000" step="0.01" class="form-control" />
+            <span asp-validation-for="MinDistanceKm" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="MaxDistanceKm" class="form-label">
+                Maximum Distance (km)
+            </label>
+            <input asp-for="MaxDistanceKm" type="number" min="0"
+                   max="1000" step="0.01" class="form-control" />
+            <span asp-validation-for="MaxDistanceKm" class="text-danger"></span>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Category</button>
+
+    <a asp-controller="Organizer"
+       asp-action="EventCategories"
+       asp-route-eventId="@Model.EventId"
+       class="btn btn-secondary">
+        Cancel
+    </a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const categoryType = document.getElementById("categoryType");
+        const ageFields = document.getElementById("ageFields");
+        const distanceFields = document.getElementById("distanceFields");
+
+        function updateCategoryFields() {
+            const isAge = categoryType.value === "Age";
+            ageFields.style.display = isAge ? "block" : "none";
+            distanceFields.style.display = isAge ? "none" : "block";
+        }
+
+        categoryType.addEventListener("change", updateCategoryFields);
+        updateCategoryFields();
+    </script>
+}
+```

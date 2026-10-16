@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "API Connection Test";
+}
+
+<h1>RaceDay API Connection Test</h1>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">
+        <strong>Connection error:</strong> @ViewBag.Error
+    </div>
+}
+else
+{
+    <p>
+        <strong>HTTP status:</strong> @ViewBag.StatusCode
+    </p>
+
+    <h2>API Response</h2>
+    <pre style="white-space: pre-wrap;">@ViewBag.ResponseBody</pre>
+}

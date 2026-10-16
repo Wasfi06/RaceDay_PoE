@@ -1,0 +1,182 @@
+﻿@model List<RaceDayMVC.Models.EventViewModel>
+
+@{
+    ViewData["Title"] = "My Events";
+}
+
+<div class="container py-5">
+
+    <!-- Page heading and Create Event button -->
+    <div class="d-flex flex-column flex-md-row
+        justify-content-between align-items-md-center
+        gap-3 mb-4">
+        <div>
+            <h1 class="fw-bold">My Events</h1>
+            <p class="text-muted mb-0">
+                View and manage the events you organise.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-controller="Organizer"
+               asp-action="Dashboard"
+               class="btn btn-outline-secondary">
+                Back to Dashboard
+            </a>
+
+            <a asp-controller="Organizer"
+               asp-action="CreateEvent"
+               class="btn btn-primary">
+                + Create Event
+            </a>
+        </div>
+    </div>
+
+    <!-- Success message -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show"
+             role="alert">
+            @TempData["SuccessMessage"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close">
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- Error message -->
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    <!-- Events list -->
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <h4 class="fw-bold">No events yet</h4>
+
+                <p class="text-muted">
+                    You haven't created any events.
+                    Create your first event to get started.
+                </p>
+
+                <a asp-controller="Organizer"
+                   asp-action="CreateEvent"
+                   class="btn btn-primary">
+                    Create Your First Event
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var raceEvent in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0">
+
+                        @if (!string.IsNullOrWhiteSpace(
+                            raceEvent.BannerImageUrl))
+                        {
+                            <img src="@raceEvent.BannerImageUrl"
+                                 class="card-img-top"
+                                 alt="@raceEvent.Name"
+                                 style="height: 190px;
+                            object-fit: cover;" />
+                        }
+
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">
+                                @raceEvent.Name
+                            </h5>
+
+                            <p class="text-muted mb-2">
+                                @raceEvent.Location
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Date:</strong>
+                                @raceEvent.EventDate.ToString(
+                                    "dd MMM yyyy, HH:mm")
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Distance:</strong>
+                                @raceEvent.DistanceKm km
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Type:</strong>
+                                @raceEvent.EventType
+                            </p>
+
+                            <p class="text-muted">
+                                @raceEvent.Description
+                            </p>
+
+                            <a asp-controller="Organizer"
+                               asp-action="EventDetails"
+                               asp-route-id="@raceEvent.EventId"
+                               class="btn btn-primary mt-2">
+                                View Details
+                            </a>
+
+                            <a asp-controller="Organizer"
+                               asp-action="EventEnrollments"
+                               asp-route-eventId="@raceEvent.EventId"
+                               class="btn btn-info">
+                                View Enrollments
+                            </a>
+
+                            <a asp-controller="Organizer"
+                               asp-action="EventResults"
+                               asp-route-eventId="@raceEvent.EventId"
+                               class="btn btn-success mt-2">
+                                Manage Results
+                            </a>
+
+                            <a asp-controller="Organizer"
+                               asp-action="EventCategories"
+                               asp-route-eventId="@raceEvent.EventId"
+                               class="btn btn-info mt-2">
+                                Manage Categories
+                            </a>
+
+                            <form asp-controller="Organizer"
+                                  asp-action="DeleteEvent"
+                                  asp-route-id="@raceEvent.EventId"
+                                  method="post"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Are you sure you want to delete this event? This action may remove related event data.');">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit" class="btn btn-danger mt-2">
+                                    Delete Event
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+</div>
