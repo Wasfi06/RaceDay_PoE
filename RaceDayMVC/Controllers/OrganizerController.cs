@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc;
 using RaceDayMVC.Models;
 using RaceDayMVC.Services;
-.
+//w
 namespace RaceDayMVC.Controllers
 {
     public class OrganizerController : Controller
