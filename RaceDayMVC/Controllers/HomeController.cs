@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RaceDayMVC.Models;
 using System.Diagnostics;
-//10
+//s
 namespace RaceDayMVC.Controllers
 {
     public class HomeController : Controller
